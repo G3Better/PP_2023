@@ -15,7 +15,7 @@ const pool = mysql.createPool({
     connectionLimit: 5,
     host: "localhost",
     user: "root",
-    database: "game_club",
+    database: "integration",
     password: ""
   });
 
@@ -36,11 +36,11 @@ server.post('/api/signIn/:login', (req, res) => {
     if(!req.body) return res.sendStatus(400);
     const { login, password } = req.body;
 
-    pool.query(`Select * from users INNER JOIN users_type ON Users_Type_REG_Number = users_type.REG_Number where users.Name = '${login}' AND Password = '${password}'`, (err, data) => {
+    pool.query(`Select * from users INNER JOIN roles ON role = roles.id_roles where users.login = '${login}' AND users.password = '${password}'`, (err, data) => {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         console.log(data);
-        return res.json({ role:data[0]?.Name, id:data[0]?.REG_Number, fio:data[0]?.FIO})
+        return res.json({ role:data[0]?.name, id:data[0]?.id_user, fio:data[0]?.FIO})
     })
 })
 
@@ -49,19 +49,20 @@ server.post('/api/signIn/:login', (req, res) => {
 server.post('/api/signUp/:login', (req, res) => {
     if(!req.body) return res.sendStatus(400);
     const { fio, login, password } = req.body;
-    pool.query(`INSERT INTO users (REG_Number, Name, Password, FIO, Users_Type_REG_Number) VALUES (NULL, '${login}', '${password}', '${fio}', '1')`, (err, data) => {
+
+    pool.query(`INSERT INTO users (id_users, FIO, email, post, role, login, password) VALUES ('NULL','${fio}','необходимо заполнить','необходимо заполнить','1','${login}','${password}')`, (err, data) => {
         if (err) return console.error(err);
         return res.json("Успещно зарегистрирован");
     })
 })
 
 // Получение всех пользователей
-server.get("/api/employees", function(req, res){
-    pool.query("SELECT FIO, users_type.Name as role, users.REG_Number as id FROM users INNER JOIN users_type ON Users_Type_REG_Number=users_type.REG_Number", function(err, data) {
+server.get("/api/users", function(req, res){
+    pool.query("SELECT FIO as fio, roles.name as role, users.id_users as id, users.email as email, users.post as post FROM users INNER JOIN roles ON role=roles.id_roles;", function(err, data) {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         const newData = data.map((elem) => {
-            return { id: elem.id, fio: elem.FIO, role: elem.role  }
+            return { id: elem.id, fio: elem.fio, role: elem.role, email: elem.email, post: elem.post  }
         })
         res.json(newData);
     });
@@ -69,31 +70,31 @@ server.get("/api/employees", function(req, res){
 
 // Получение всех ролей
 server.get("/api/roles", function(req, res){
-    pool.query("SELECT * FROM `users_type`", function(err, data) {
+    pool.query("SELECT * FROM `roles`", function(err, data) {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         const newData = data.map((elem) => {
-            return { id: elem.REG_Number, role: elem.Name  }
+            return { id: elem.id_roles, role: elem.name}
         })
         res.json(newData);
     });
 });
 
 // Удаление пользователя
-server.delete("/api/employee/delete/:id", function (req, res) {
+server.delete("/api/users/delete/:id", function (req, res) {
     if(!req.body) return res.sendStatus(400);
     const { id } = req.body;
-    pool.query(`Delete From users where REG_Number = '${id}'`, function(err, data) {
+    pool.query(`Delete From users where id_users = '${id}'`, function(err, data) {
         if (err) return console.error(err);
         res.json('delete user');
     });
 });
 
 // Редактирование пользователя
-server.put("/api/employee/edit/:id", function (req, res) {
+server.put("/api/users/edit/:id", function (req, res) {
     if(!req.body) return res.sendStatus(400);
-    const { id, fio, idRole } = req.body;
-    pool.query(`UPDATE users SET FIO = '${fio}', Users_Type_REG_Number = '${idRole}' WHERE users.REG_Number = '${id}'`, function(err, data) {
+    const { id, fio, email, post, idRole } = req.body;
+    pool.query(`UPDATE users SET FIO ='${fio}', email ='${email}', post ='${post}', role ='${idRole}' WHERE users.id_users = '${id}'`, function(err, data) {
         if (err) return console.error(err);
         res.json('user updated');
     });

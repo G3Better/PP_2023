@@ -1,9 +1,9 @@
-# Game_club
-project for university
+# Integration
+project for PP
 
 To launch a server, you need:
 1) Move to /backend/bd folder
-2) Download `game_club.sql`
+2) Download `integration.sql`
 3) import this file in your BD
 4) In the file `server` change fields login, password (if you need)
 3) Move to /backend/ folder

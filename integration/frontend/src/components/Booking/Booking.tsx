@@ -13,7 +13,7 @@ import { dateConverter, dateForModal } from "../../utills/dateUtills";
 import Header from "../Header/Header";
 import styles from "./Booking.module.sass";
 import {checkIsArrayDataFromModal, uniqArrayForModal} from "../../utills/dataUtil";
-import {getEmployees} from "../../controllers/EmployeeController";
+import {getUsers} from "../../controllers/UsersController";
 
 const columns: GridColDef[] = [
   { field: "Incoming_DateTime", headerName: "Дата и время бронирования", type: "dateTime" },
@@ -42,7 +42,7 @@ const Booking: React.FC = () => {
   }, []);
 
   const fetchFIO = React.useCallback(async () => {
-    const FIO_select = await getEmployees();
+    const FIO_select = await getUsers();
     if (FIO_select.length) {
       const res = FIO_select.map((el:any)=>({id:el.id, name:el.fio}))
       setFIO(res);

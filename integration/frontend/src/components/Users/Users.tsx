@@ -3,25 +3,27 @@ import { GridColDef } from "@mui/x-data-grid";
 import React from "react";
 import TableData from "../../UI/Table/TableData";
 import {
-  deleteEmployee,
-  editEmployee,
-  getEmployees,
+  deleteUser,
+  editUser,
+  getUsers,
   getRoles,
-} from "../../controllers/EmployeeController";
+} from "../../controllers/UsersController";
 import {
   checkIsArrayDataFromModal,
   uniqArrayForModal,
 } from "../../utills/dataUtil";
 import Header from "../Header/Header";
-import styles from "./Employees.module.sass";
+import styles from "./Users.module.sass";
 
 const columns: GridColDef[] = [
   { field: "fio", headerName: "FIO", type: "string" },
+  { field: "email", headerName: "Email", type: "string" },
+  { field: "post", headerName: "POST", type: "string" },
   { field: "role", headerName: "Role" },
   { field: "roleSelect", headerName: "Role", type: "select" },
 ];
 
-const Employees: React.FC = () => {
+const Users: React.FC = () => {
   const [data, setData] = React.useState([]);
   const [dataRoles, setDataRoles] = React.useState<any>([]);
   const [open, setOpen] = React.useState(false);
@@ -38,7 +40,7 @@ const Employees: React.FC = () => {
   }, []);
 
   const fetchData = React.useCallback(async () => {
-    const dataTable = await getEmployees();
+    const dataTable = await getUsers();
     fetchDataRoles();
     if (dataTable.length) {
       setData(dataTable);
@@ -61,9 +63,11 @@ const Employees: React.FC = () => {
   );
 
   const handleEdit = React.useCallback((data: any) => {
-    editEmployee(
+    editUser(
       data.id,
       data.fio,
+      data.email,
+      data.post,
       checkIsArrayDataFromModal(data.roleSelect)
     );
     setOpen(false);
@@ -71,7 +75,7 @@ const Employees: React.FC = () => {
 
   const handleDelete = React.useCallback(async () => {
     if (id) {
-      const data = await deleteEmployee(id);
+      const data = await deleteUser(id);
       await fetchData();
       if (data) setOpen(false);
     }
@@ -104,6 +108,8 @@ const Employees: React.FC = () => {
                 handleSetCurrentData(row);
               }}>
               <TableCell align="left">{row.fio}</TableCell>
+              <TableCell align="left">{row.email}</TableCell>
+              <TableCell align="left">{row.post}</TableCell>
               <TableCell align="left">{row.role}</TableCell>
             </TableRow>
           ))}
@@ -111,4 +117,4 @@ const Employees: React.FC = () => {
     </>
   );
 };
-export default Employees;
+export default Users;
