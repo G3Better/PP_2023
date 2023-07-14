@@ -1,4 +1,6 @@
 export const uniqArrayForModal = (data: any, currentData: any, field: string) => {
+    console.log("Дата=", data);
+    console.log("CurrentДата=", currentData);
     const index = data?.findIndex(
         (el: { id: number; name: string }) => el.name === currentData[field]
     );

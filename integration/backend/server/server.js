@@ -58,7 +58,7 @@ server.post('/api/signUp/:login', (req, res) => {
 
 // Получение всех пользователей
 server.get("/api/users", function(req, res){
-    pool.query("SELECT FIO as fio, roles.name as role, users.id_users as id, users.email as email, users.post as post FROM users INNER JOIN roles ON role=roles.id_roles;", function(err, data) {
+    pool.query("SELECT FIO as fio, roles.name as role, users.id_users as id, users.email as email, users.post as post FROM users INNER JOIN roles ON role=roles.id_roles", function(err, data) {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         const newData = data.map((elem) => {
@@ -100,138 +100,188 @@ server.put("/api/users/edit/:id", function (req, res) {
     });
 });
 
-// Получение всех бронирований
-server.get("/api/booking", function(req, res){
-    pool.query("SELECT * FROM `бронирования`", function(err, data) {
+// Получение всех Систем
+server.get("/api/systems", function(req, res){
+    pool.query("SELECT id_it_system as id, name as name, FIO as responsible, ip_address as ip FROM it_system, users WHERE responsible=users.id_users", function(err, data) {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         const newData = data.map((elem) => {
-            return { id: elem.REG_Number, Incoming_DateTime: elem.Incoming_DateTIme, FIO: elem.FIO, Rental_Time: elem.Rental_Time, game_place: elem.game_place   }
+            return { id: elem.id, name: elem.name, responsible: elem.responsible, ip: elem.ip   }
         })
         res.json(newData);
     });
 });
 
-// Получение всех Игровых мест
-server.get("/api/game_places", function(req, res){
-    pool.query("SELECT game_places.`REG_Number` as id, game_places.`Name` as name, `Cost` as cost, computers.Name as computer, status.Name as status, game_places_category.Name as category FROM `game_places`, computers, game_places_category, status WHERE Computers_REG_Number=computers.REG_Number and game_places.Status_REG_Number=status.REG_Number and Game_Places_Category_REG_Number=game_places_category.REG_Number;", function(err, data) {
+// Получение всех ответсвенных
+server.get("/api/responsible", function(req, res){
+    pool.query("SELECT id_users as id, FIO as fio FROM users WHERE role=2", function(err, data) {
         if (err) return console.error(err);
         if(!data.length) return res.sendStatus(400);
         const newData = data.map((elem) => {
-            return { id: elem.id, name: elem.name, cost: elem.cost, computer: elem.computer, status: elem.status, category: elem.category   }
+            return { id: elem.id, name: elem.fio }
         })
         res.json(newData);
     });
 });
 
-// Получение всех игровых мест для модалки
-server.get("/api/game_places_model", function(req, res){
-    pool.query("SELECT * FROM `game_places`", function(err, data) {
-        if (err) return console.error(err);
-        if(!data.length) return res.sendStatus(400);
-        const newData = data.map((elem) => {
-            return { id: elem.REG_Number, name: elem.Name  }
-        })
-        res.json(newData);
-    });
-});
-
-// Получение всех статусов игрового места
-server.get("/api/statuses", function(req, res){
-    pool.query("SELECT * FROM `status` WHERE REG_Number=5 or REG_Number=6 or REG_Number=7", function(err, data) {
-        if (err) return console.error(err);
-        if(!data.length) return res.sendStatus(400);
-        const newData = data.map((elem) => {
-            return { id: elem.REG_Number, name: elem.Name  }
-        })
-        res.json(newData);
-    });
-});
-
-// Получение всех компьютеров
-server.get("/api/computers", function(req, res){
-    pool.query("SELECT * FROM `computers`", function(err, data) {
-        if (err) return console.error(err);
-        if(!data.length) return res.sendStatus(400);
-        const newData = data.map((elem) => {
-            return { id: elem.REG_Number, name: elem.Name  }
-        })
-        res.json(newData);
-    });
-});
-
-// Получение всех категорий игровых мест
-server.get("/api/game_places_category", function(req, res){
-    pool.query("SELECT * FROM `game_places_category`", function(err, data) {
-        if (err) return console.error(err);
-        if(!data.length) return res.sendStatus(400);
-        const newData = data.map((elem) => {
-            return { id: elem.REG_Number, name: elem.Name }
-        })
-        res.json(newData);
-    });
-});
-
-// Удаление игрового места
-server.delete("/api/game_places/delete/:id", function (req, res) {
+// Удаление системы
+server.delete("/api/systems/delete/:id", function (req, res) {
     if(!req.body) return res.sendStatus(400);
     const { id } = req.body;
-    pool.query(`DELETE FROM game_places WHERE REG_Number = '${id}'`, function(err, data) {
+    pool.query(`DELETE FROM it_system WHERE id_it_system='${id}'`, function(err, data) {
         if (err) return console.error(err);
         res.json('game_place deleted');
     });
 });
 
-// Редактирование игрового места
-server.put("/api/game_places/edit/:id", function (req, res) {
+// Редактирование системы
+server.put("/api/systems/edit/:id", function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    const { id, name, cost, computer, status, category } = req.body;
-    pool.query(`UPDATE  game_places  SET  Name ='${name}', Cost ='${cost}', Computers_REG_Number ='${computer}', Status_REG_Number ='${status}', Game_Places_Category_REG_Number ='${category}' where game_places.REG_Number='${id}'`, function(err, data) {
+    const { id, name, responsible, ip } = req.body;
+    pool.query(`UPDATE it_system SET name='${name}', responsible='${responsible}', ip_address='${ip}' WHERE id_it_system='${id}'`, function(err, data) {
         if (err) return console.error(err);
         res.json('game_place updated');
     });
 });
 
-// Добавление игрового места
-server.post("/api/game_places/add", function (req, res) {
+// Добавление системы
+server.post("/api/systems/add", function (req, res) {
     if (!req.body) return res.sendStatus(400);
-    const { name, cost, computer, status, category } = req.body;
-    pool.query(`INSERT INTO  game_places ( REG_Number ,  Name ,  Cost ,  Computers_REG_Number ,  Status_REG_Number ,  Game_Places_Category_REG_Number ) VALUES (Null,'${name}','${cost}','${computer}','${status}','${category}')`, function(err, data) {
+    const { name, responsible, ip } = req.body;
+    pool.query(`INSERT INTO it_system ( id_it_system, name, responsible, ip_address) VALUES ('NULL','${name}','${responsible}','${ip}')`, function(err, data) {
         if (err) return console.error(err);
         res.json('game_place added');
     });
 });
 
-// Удаление booking
-server.delete("/api/booking/delete/:id", function (req, res) {
+// Получение всех систем для модалки
+server.get("/api/game_places_model", function(req, res){
+    pool.query("SELECT * FROM `it_systems`", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id_it_system, name: elem.name  }
+        })
+        res.json(newData);
+    });
+});
+
+
+
+// Получение всех заказов
+server.get("/api/orders", function(req, res){
+    pool.query("SELECT id_order, it_system.name as source_system, destination_system, users.FIO as customer, autorization.name as autorization, requests.rate as requests_rate, status.name AS status, `description` FROM `order`, it_system, users, autorization, requests, status WHERE source_system=it_system.id_it_system AND customer=users.id_users AND autorization=autorization.id_autorization AND requests_rate=requests.id_requests AND status=status.id_status", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id_order, source_systems: elem.source_system, dist_systems: elem.destination_system, customers: elem.customer, authorizations: elem.autorization, requests_rates: elem.requests_rate, statuses: elem.status, description: elem.description   }
+        })
+        res.json(newData);
+    });
+});
+
+// Удаление заказов
+server.delete("/api/orders/delete/:id", function (req, res) {
     if(!req.body) return res.sendStatus(400);
     const { id } = req.body;
-    pool.query(`Delete From booking where REG_Number = '${id}'`, function(err, data) {
+    pool.query("DELETE FROM order WHERE id_order='${id}'", function(err, data) {
         if (err) return console.error(err);
         res.json('delete booking');
     });
 });
 
 
-// Редактирование booking
-server.put("/api/booking/edit/:id", function (req, res) {
+// Редактирование заказов
+server.put("/api/orders/edit/:id", function (req, res) {
     if(!req.body) return res.sendStatus(400);
-    const { id, Incoming_DateTime, FIO, Rental_Time, game_place } = req.body;
+    const { id, source_system, destination_system, customer, autorization, requests_rate, status, description } = req.body;
     console.log(req.body);
-    pool.query(`UPDATE booking SET Incoming_DateTIme='${Incoming_DateTime}', Rental_Time=${Rental_Time}, Users_REG_Number='${FIO}', Game_Places_REG_Number=${game_place} WHERE REG_Number=${id}`, function(err, data) {
+    pool.query("UPDATE `order` SET source_system='${source_system}', destination_system='${destination_system}', customer='${customer}', autorization='${autorization}', requests_rate='${requests_rate}', status='${status}', description='${description}' WHERE id_order='${id}'", function(err, data) {
         if (err) return console.error(err);
-        res.json('booking updated');
+        res.json('orders updated');
     });
 });
 
-// Добавление booking
-server.post("/api/booking/add", function (req, res) {
+// Добавление заказов
+server.post("/api/orders/add", function (req, res) {
     if(!req.body) return res.sendStatus(400);
-    const { Incoming_DateTime, FIO, Rental_Time, game_place } = req.body;
+    const { source_system, destination_system, customer, autorization, requests_rate, status, description } = req.body;
     console.log(req.body);
     console.log(Incoming_DateTime);
-    pool.query(`INSERT INTO booking (REG_Number, Incoming_DateTIme, Rental_Time, Users_REG_Number, Game_Places_REG_Number) VALUES (Null,'${Incoming_DateTime}','${Rental_Time}','${FIO}','${game_place}')`, function(err, data) {
+    pool.query("INSERT INTO `order`(id_order, source_system, destination_system, customer, autorization, requests_rate, status, description) VALUES ('Null','${source_system}','${destination_system}','${customer}','${autorization}','${requests_rate}','${status}','${description}')", function(err, data) {
         if (err) return console.error(err);
-        res.json('booking updated');
+        res.json('orders updated');
+    });
+});
+
+// Получение всех исходных систем
+server.get("/api/source_systems", function(req, res){
+    pool.query("SELECT id_it_system as id, name as name FROM it_system", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.name }
+        })
+        res.json(newData);
+    });
+});
+
+// Получение всех конечных систем
+server.get("/api/dist_systems", function(req, res){
+    pool.query("SELECT id_it_system as id, name as name FROM it_system", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.name }
+        })
+        res.json(newData);
+    });
+});
+
+// Получение всех заказчиков
+server.get("/api/customers", function(req, res){
+    pool.query("SELECT id_users as id, FIO as fio FROM users WHERE role=1", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.fio }
+        })
+        res.json(newData);
+    });
+});
+
+// Получение всех авторизаций
+server.get("/api/authorizations", function(req, res){
+    pool.query("SELECT id_autorization as id, name as name FROM autorization", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.name }
+        })
+        res.json(newData);
+    });
+});
+
+// Получение всех частот запроса
+server.get("/api/requests_rates", function(req, res){
+    pool.query("SELECT id_requests as id, rate as name FROM requests", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.name }
+        })
+        res.json(newData);
+    });
+});
+
+// Получение всех статусов
+server.get("/api/statuses", function(req, res){
+    pool.query("SELECT id_status as id, name as name FROM status", function(err, data) {
+        if (err) return console.error(err);
+        if(!data.length) return res.sendStatus(400);
+        const newData = data.map((elem) => {
+            return { id: elem.id, name: elem.name }
+        })
+        res.json(newData);
     });
 });

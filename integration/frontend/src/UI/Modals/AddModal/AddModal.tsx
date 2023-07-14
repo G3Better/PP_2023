@@ -64,7 +64,9 @@ const AddModal: React.FC<IAddModal> = ({
     );
 
     const handleSave = React.useCallback(() => {
+        console.log("ЧТо-то 1")
         if (typeof handleAdd === "function") {
+            console.log("ЧТо-то 2")
             handleAdd(anyData);
             setAnyData(null);
             onClose();

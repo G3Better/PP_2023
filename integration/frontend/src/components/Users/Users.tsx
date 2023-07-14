@@ -16,10 +16,10 @@ import Header from "../Header/Header";
 import styles from "./Users.module.sass";
 
 const columns: GridColDef[] = [
-  { field: "fio", headerName: "FIO", type: "string" },
+  { field: "fio", headerName: "ФИО", type: "string" },
   { field: "email", headerName: "Email", type: "string" },
-  { field: "post", headerName: "POST", type: "string" },
-  { field: "role", headerName: "Role" },
+  { field: "post", headerName: "Должность", type: "string" },
+  { field: "role", headerName: "Роль" },
   { field: "roleSelect", headerName: "Role", type: "select" },
 ];
 
@@ -88,7 +88,7 @@ const Users: React.FC = () => {
   return (
     <>
       <Header />
-      <h2 className={styles.employees_title}>Users</h2>
+      <h2 className={styles.users_title}>Users</h2>
           <TableData
         
         columns={columns}

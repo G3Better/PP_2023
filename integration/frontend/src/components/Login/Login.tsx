@@ -56,7 +56,7 @@ const Login: React.FC = () => {
       localStorage.setItem("role", data.role);
       localStorage.setItem("id", data.id);
       localStorage.setItem("fio", data.fio);
-      navigate("/booking");
+      navigate("/orders");
       return;
     }
     setError(data);

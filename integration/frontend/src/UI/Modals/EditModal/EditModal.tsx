@@ -37,9 +37,11 @@ const EditModal: React.FC<IEditModal> = ({
   const setAnyDataFromModal = React.useCallback(
       (value: string, field: string) => {
         if (field.includes("Select")) {
+            console.log(data[field]);
           const id = data[field].find(
-              (el: { id: number; name: string }) => el.name === value
-          ).id;
+              (el: { id: number; name: string } | undefined) => el && el.name === value
+          )?.id;
+          if (!id) return;
           setAnyData((prev: { [key: string]: string | object }) => ({
             ...prev,
             [field]: { id: id, name: value },
@@ -146,15 +148,17 @@ const EditModal: React.FC<IEditModal> = ({
                               anyData[el.field]?.name || data[el.field]?.[0]?.name || ""
                           }
                           onChange={(event) => {
-                            setAnyDataFromModal(event.target.value, el.field);
+                            event.target.value && setAnyDataFromModal(event.target.value, el.field);
                           }}
                           label={el.headerName}>
                         {data[el.field]?.map(
-                            (item: { id: number; name: string }, index: number) => (
-                                <MenuItem value={item.name} key={`${item.id}${index}`}>
-                                  {item.name}
-                                </MenuItem>
-                            )
+                            (item: { id: number; name: string| undefined }, index: number) => {
+                                return (
+                                    item?.name && (<MenuItem value={item.name} key={`${item.id}${index}`}>
+                                        {item.name}
+                                    </MenuItem>)
+                                )
+                            }
                         )}
                       </Select>
                     </FormControl>

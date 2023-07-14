@@ -28,9 +28,9 @@ const Header: React.FC = () => {
   return (
     <>
       <header className={styles.header}>
-        <NavLink to="/booking">Booking</NavLink>
+        <NavLink to="/orders">Orders</NavLink>
         {roles.admin === localStorage.getItem("role") && <NavLink to="/users">Users</NavLink>}
-        <NavLink to="/game_places">GamePlaces</NavLink>
+        <NavLink to="/systems">Systems</NavLink>
         <button onClick={handleClick} className={styles.fullName}>
           {fio}
         </button>

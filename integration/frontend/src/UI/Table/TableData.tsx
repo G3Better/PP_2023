@@ -42,8 +42,6 @@ const TableData: React.FC<ITable> = ({
 
   return (
     <div>
-      {roles.admin === localStorage.getItem("role") &&
-        typeof handleAdd === "function" && (
           <div className={styles.add_btn}>
             <Button
               onClick={handleShowAddModal}
@@ -54,7 +52,6 @@ const TableData: React.FC<ITable> = ({
               Add
             </Button>
           </div>
-        )}
       <TableContainer component={Paper} className={styles.table}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -72,7 +69,6 @@ const TableData: React.FC<ITable> = ({
           <TableBody>{children}</TableBody>
         </Table>
       </TableContainer>
-      {roles.admin === localStorage.getItem("role") && (
         <>
           <MiniModal
             open={openModal}
@@ -90,7 +86,6 @@ const TableData: React.FC<ITable> = ({
             data={data}
           />
         </>
-      )}
     </div>
   );
 };
