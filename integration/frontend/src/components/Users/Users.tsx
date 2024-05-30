@@ -19,6 +19,7 @@ const columns: GridColDef[] = [
   { field: "fio", headerName: "ФИО", type: "string" },
   { field: "email", headerName: "Email", type: "string" },
   { field: "post", headerName: "Должность", type: "string" },
+  { field: "contacts", headerName: "Иные контакты", type: "string" },
   { field: "role", headerName: "Роль" },
   { field: "roleSelect", headerName: "Role", type: "select" },
 ];
@@ -68,6 +69,7 @@ const Users: React.FC = () => {
       data.fio,
       data.email,
       data.post,
+      data.contacts,
       checkIsArrayDataFromModal(data.roleSelect)
     );
     setOpen(false);
@@ -110,6 +112,7 @@ const Users: React.FC = () => {
               <TableCell align="left">{row.fio}</TableCell>
               <TableCell align="left">{row.email}</TableCell>
               <TableCell align="left">{row.post}</TableCell>
+              <TableCell align="left">{row.contacts}</TableCell>
               <TableCell align="left">{row.role}</TableCell>
             </TableRow>
           ))}

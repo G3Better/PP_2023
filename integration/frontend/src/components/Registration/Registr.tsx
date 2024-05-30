@@ -21,6 +21,9 @@ const Registr: React.FC = () => {
   const [password, setPassword] = React.useState<string>("");
   const [repeatPassword, setRepeatPassword] = React.useState<string>("");
   const [fio, setFIO] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [post, setPost] = React.useState("");
+  const [contacts, setContacts] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
 
   const handleClickShowPassword = React.useCallback(() => {
@@ -41,6 +44,30 @@ const Registr: React.FC = () => {
     },
     []
   );
+
+  const handleEmail = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const target = event.target as HTMLInputElement;
+            setEmail(target.value || "");
+        },
+        []
+    );
+
+    const handlePost = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const target = event.target as HTMLInputElement;
+            setPost(target.value || "");
+        },
+        []
+    );
+
+    const handleContacts = React.useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            const target = event.target as HTMLInputElement;
+            setContacts(target.value || "");
+        },
+        []
+    );
 
   const handlePassword = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,12 +95,12 @@ const Registr: React.FC = () => {
   );
 
   const handleSingUp = React.useCallback(async () => {
-    signUp(fio, login, password).then(()=>{
+    signUp(fio, email, post, contacts, login, password).then(()=>{
         localStorage.setItem("login", login);
         localStorage.setItem("password", password);
         navigate("/");
     }).catch((err)=>setError(err));
-  }, [fio, login, navigate, password]);
+  }, [fio, email, post, contacts, login, navigate, password]);
 
   React.useEffect(() => {
     if (password !== repeatPassword) setError("Введеные пароли не совпадают");
@@ -94,6 +121,39 @@ const Registr: React.FC = () => {
           value={fio}
         />
       </FormControl>
+        <FormControl sx={{ m: 1, width: "50ch" }} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Email</InputLabel>
+            <OutlinedInput
+                id="outlined-adornment-password"
+                type="text"
+                label="email"
+                autoComplete="off"
+                onChange={handleEmail}
+                value={email}
+            />
+        </FormControl>
+        <FormControl sx={{ m: 1, width: "50ch" }} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Post</InputLabel>
+            <OutlinedInput
+                id="outlined-adornment-password"
+                type="text"
+                label="post"
+                autoComplete="off"
+                onChange={handlePost}
+                value={post}
+            />
+        </FormControl>
+        <FormControl sx={{ m: 1, width: "50ch" }} variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password">Contacts</InputLabel>
+            <OutlinedInput
+                id="outlined-adornment-password"
+                type="text"
+                label="contacts"
+                autoComplete="off"
+                onChange={handleContacts}
+                value={contacts}
+            />
+        </FormControl>
       <FormControl sx={{ m: 1, width: "50ch" }} variant="outlined">
         <InputLabel htmlFor="outlined-adornment-password">Login</InputLabel>
         <OutlinedInput

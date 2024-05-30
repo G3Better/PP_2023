@@ -1,7 +1,7 @@
 import { deleteRequest, getRequest, postRequest, putRequest } from "../axios/http"
 
-export const getOrders = async () => {
-    const data = await getRequest('/api/orders');
+export const getSrcSystem = async () => {
+    const data = await getRequest('/api/src_systems_order');
     if (data) {
         return data
     } else {
@@ -9,8 +9,8 @@ export const getOrders = async () => {
     }
 }
 
-export const getSourceSystems = async () => {
-    const data = await getRequest('/api/source_systems');
+export const getDstSystem = async () => {
+    const data = await getRequest('/api/dst_systems_order');
     if (data) {
         return data
     } else {
@@ -18,8 +18,8 @@ export const getSourceSystems = async () => {
     }
 }
 
-export const getDistSystems = async () => {
-    const data = await getRequest('/api/dist_systems');
+export const getCustomer = async () => {
+    const data = await getRequest('/api/users_order');
     if (data) {
         return data
     } else {
@@ -27,8 +27,8 @@ export const getDistSystems = async () => {
     }
 }
 
-export const getAuthorizations = async () => {
-    const data = await getRequest('/api/authorizations');
+export const getRequestRate = async () => {
+    const data = await getRequest('/api/requests_rate');
     if (data) {
         return data
     } else {
@@ -36,16 +36,7 @@ export const getAuthorizations = async () => {
     }
 }
 
-export const getRequestsRates = async () => {
-    const data = await getRequest('/api/requests_rates');
-    if (data) {
-        return data
-    } else {
-        return 'Данных нет'
-    }
-}
-
-export const getStatuses = async () => {
+export const getStatus = async () => {
     const data = await getRequest('/api/statuses');
     if (data) {
         return data
@@ -54,8 +45,17 @@ export const getStatuses = async () => {
     }
 }
 
-export const getCustomers = async () => {
-    const data = await getRequest('/api/customers');
+export const getAuthorization = async () => {
+    const data = await getRequest('/api/authorization');
+    if (data) {
+        return data
+    } else {
+        return 'Данных нет'
+    }
+}
+
+export const getOrders = async () => {
+    const data = await getRequest('/api/orders');
     if (data) {
         return data
     } else {
@@ -72,8 +72,8 @@ export const deleteOrders = async (id: string) => {
     }
 };
 
-export const editOrders = async (id: number, source_system: string, destination_system: string, customer: string, autorization: string, requests_rate: string, status: string, description: string) => {
-    const res = await putRequest(`/api/orders/edit/${id}`, {}, { id, source_system, destination_system, customer, autorization, requests_rate, status, description });
+export const editOrders = async (id: number, source_system: number, dest_system: number, request_rate: number, status: number, authorization: number, customer: number, description: number, swagger: number) => {
+    const res = await putRequest(`/api/orders/edit/${id}`, {}, { id, source_system, dest_system, request_rate, status, authorization, customer, description, swagger });
     if (res) {
         return res;
     } else {
@@ -81,13 +81,12 @@ export const editOrders = async (id: number, source_system: string, destination_
     }
 };
 
-export const addOrders = async (source_system: string, destination_system: string, customer: string, autorization: string, requests_rate: string, status: string, description: string) => {
-    console.log("Что-то 3");
-    const res = await postRequest(`/api/orders/add`, {}, { source_system, destination_system, customer, autorization, requests_rate, status, description });
+export const addOrders = async (source_system: number, dest_system: number, request_rate: number, status: number, authorization: number, customer: number, description: number, swagger: number) => {
+    const res = await postRequest(`/api/orders/add`, {}, { source_system, dest_system, request_rate, status, authorization, customer, description, swagger });
     if (res) {
-        const res2 = await getOrders()
-        return res2;
+        getOrders()
+        return res;
     } else {
-        return "Не получилось добавить новое бронирование";
+        return "Не получилось добавить новую заявку";
     }
 };
