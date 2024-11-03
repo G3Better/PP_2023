@@ -3,118 +3,117 @@ import { GridColDef } from "@mui/x-data-grid";
 import React from "react";
 import TableData from "../../UI/Table/TableData";
 import {
-  getOrders,
-  getSourceSystems,
-  getDistSystems,
-  getAuthorizations,
-  getRequestsRates,
-  getStatuses,
-  getCustomers,
+  addOrders,
   deleteOrders,
   editOrders,
-  addOrders
+  getOrders,
+  getSrcSystem,
+  getDstSystem,
+  getCustomer,
+  getRequestRate,
+  getStatus,
+  getAuthorization
 } from "../../controllers/OrdersController";
-import { dateConverter, dateForModal } from "../../utills/dateUtills";
+import { dateConverter } from "../../utills/dateUtills";
 import Header from "../Header/Header";
 import styles from "./Orders.module.sass";
 import {checkIsArrayDataFromModal, uniqArrayForModal} from "../../utills/dataUtil";
 
-
 const columns: GridColDef[] = [
-  { field: "source_systems", headerName: "Система-источник" },
-  { field: "source_systemsSelect", headerName: "Система-источник", type: "select" },
-  { field: "dist_systems", headerName: "Система-получатель" },
-  { field: "dist_systemsSelect", headerName: "Система-получатель", type: "select" },
-  { field: "authorizations", headerName: "Авторизация" },
-  { field: "authorizationsSelect", headerName: "Авторизация", type: "select" },
-  { field: "requests_rates", headerName: "Частота запросов" },
-  { field: "requests_ratesSelect", headerName: "Частота запросов", type: "select" },
-  { field: "statuses", headerName: "Статус" },
-  { field: "statusesSelect", headerName: "Статус", type: "select" },
-  { field: "customers", headerName: "Заказчик" },
-  { field: "customresSelect", headerName: "Заказчик", type: "select" },
+  { field: "id", headerName: "Номер заявки", type: "number" },
+  { field: "source", headerName: "Система-источник" },
+  { field: "sourceSelect", headerName: "Source", type: "select" },
+  { field: "dest", headerName: "Система-получатель" },
+  { field: "destSelect", headerName: "Dest", type: "select" },
+  { field: "request_rate", headerName: "Частота запросов" },
+  { field: "request_rateSelect", headerName: "Request_rate", type: "select" },
+  { field: "status", headerName: "Статус заявки" },
+  { field: "statusSelect", headerName: "Status", type: "select" },
+  { field: "authorization", headerName: "Тип авторизации" },
+  { field: "authorizationSelect", headerName: "Authorization", type: "select" },
+  { field: "customer", headerName: "Заказчик" },
+  { field: "customerSelect", headerName: "Сustomer", type: "select" },
   { field: "description", headerName: "Описание", type: "string" },
+  { field: "swagger", headerName: "Сваггер или WSDL", type: "string" }
 ];
 
 const Orders: React.FC = () => {
-  const [source, setSource] = React.useState<any>([]);
-  const [auth, setAuth] = React.useState<any>([]);
-  const [destination, setDest] = React.useState<any>([]);
-  const [req_rate, setReqRate] = React.useState<any>([]);
-  const [status, setStatus] = React.useState<any>([]);
-  const [customer, setCustomer] = React.useState<any>([]);
+  const [sourceSelect, setSource] = React.useState<any>([]);
+  const [destSelect, setDest] = React.useState<any>([]);
+  const [request_rateSelect, setRequest_rate] = React.useState<any>([]);
+  const [statusSelect, setStatus] = React.useState<any>([]);
+  const [authorizationSelect, setAuthorization] = React.useState<any>([]);
+  const [customerSelect, setСustomer] = React.useState<any>([]);
   const [data, setData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
   const [id, setId] = React.useState<string | undefined>(undefined);
   const [editData, setEditData] = React.useState<any>(null);
-
-  const fetchDest = React.useCallback(async () => {
-    const destination = await getDistSystems();
-    console.log("destination = ", destination);
-    if (destination.length) {
-      setDest(destination);
+  const fetchData = React.useCallback(async () => {
+    fetchSource();
+    fetchDst();
+    fetchRequest_rate();
+    fetchStatus();
+    fetchAuthorization();
+    fetchСustomer();
+    const dataTable = await getOrders();
+    if (dataTable.length) {
+      setData(dataTable);
     } else {
-      setDest([]);
+      setData([]);
     }
   }, []);
 
-  const fetchSources = React.useCallback(async () => {
-    const source = await getSourceSystems();
-    if (source.length) {
-      setSource(source);
+  const fetchSource = React.useCallback(async () => {
+    const sourceSelect = await getSrcSystem();
+    if (sourceSelect.length) {
+      setSource(sourceSelect);
     } else {
       setSource([]);
     }
   }, []);
 
-  const fetchAuth = React.useCallback(async () => {
-    const auth = await getAuthorizations();
-    if (auth.length) {
-      setAuth(auth);
+  const fetchDst = React.useCallback(async () => {
+    const destSelect = await getDstSystem();
+    if (destSelect.length) {
+      setDest(destSelect);
     } else {
-      setAuth([]);
+      setDest([]);
     }
   }, []);
 
-  const fetchReqRate = React.useCallback(async () => {
-    const req_rate = await getRequestsRates();
-    if (req_rate.length) {
-      setReqRate(req_rate);
+  const fetchRequest_rate = React.useCallback(async () => {
+    const request_rateSelect = await getRequestRate();
+    if (request_rateSelect.length) {
+      setRequest_rate(request_rateSelect);
     } else {
-      setReqRate([]);
+      setRequest_rate([]);
     }
   }, []);
 
   const fetchStatus = React.useCallback(async () => {
-    const status = await getStatuses();
-    if (status.length) {
-      setStatus(status);
+    const statusSelect = await getStatus();
+    if (statusSelect.length) {
+      setStatus(statusSelect);
     } else {
       setStatus([]);
     }
   }, []);
 
-  const fetchCustomers = React.useCallback(async () => {
-    const customer = await getCustomers();
-    if (customer.length) {
-      setCustomer(customer);
+  const fetchAuthorization = React.useCallback(async () => {
+    const authorizationSelect = await getAuthorization();
+    if (authorizationSelect.length) {
+      setAuthorization(authorizationSelect);
     } else {
-      setCustomer([]);
+      setAuthorization([]);
     }
   }, []);
 
-  const fetchData = React.useCallback(async () => {
-    const dataTable = await getOrders();
-    fetchSources();
-    fetchDest();
-    fetchAuth();
-    fetchReqRate();
-    fetchStatus();
-    fetchCustomers();
-    if (dataTable.length) {
-      setData(dataTable);
+  const fetchСustomer = React.useCallback(async () => {
+    const customerSelect = await getCustomer();
+    if (customerSelect.length) {
+      setСustomer(customerSelect);
     } else {
-      setData([]);
+      setСustomer([]);
     }
   }, []);
 
@@ -124,47 +123,48 @@ const Orders: React.FC = () => {
   }, []);
 
   const handleSetCurrentData = React.useCallback((currentData: any) => {
-    let newObj = uniqArrayForModal(source, currentData, "source_systems");
-    console.log("newObj dist before = ", newObj);
-    newObj = uniqArrayForModal(destination, currentData, "dist_systems");
-    console.log("newObj dist after = ", newObj);
-    newObj = uniqArrayForModal(auth, currentData, "authorizations");
-    newObj = uniqArrayForModal(req_rate, currentData, "requests_rates");
-    newObj = uniqArrayForModal(status, currentData, "statuses");
-    newObj = uniqArrayForModal(customer, currentData, "customers");
+    let newObj = uniqArrayForModal(sourceSelect, currentData, "source");
+    newObj = uniqArrayForModal(destSelect, currentData, "dest");
+    newObj = uniqArrayForModal(request_rateSelect, currentData, "request_rate");
+    newObj = uniqArrayForModal(statusSelect, currentData, "status");
+    newObj = uniqArrayForModal(authorizationSelect, currentData, "authorization");
+    newObj = uniqArrayForModal(customerSelect, currentData, "customer");
     setEditData(newObj);
-  }, []);
+    setEditData(currentData);
+  }, [sourceSelect, destSelect, request_rateSelect, statusSelect, authorizationSelect, customerSelect]);
 
-  const handleAdd = async(data: any) => {
-    console.log("data qweqwsadasds = ", data);
-    const dataTable=await addOrders(
-        checkIsArrayDataFromModal(data.source_systemsSelect),
-        checkIsArrayDataFromModal(data.dest_systemsSelect),
-        checkIsArrayDataFromModal(data.authorizationsSelect),
-        checkIsArrayDataFromModal(data.requests_ratesSelect),
-        checkIsArrayDataFromModal(data.statusesSelect),
-        checkIsArrayDataFromModal(data.customresSelect),
+  const handleAdd = React.useCallback((data: any) => {
+    addOrders(
+        checkIsArrayDataFromModal(data.sourceSelect),
+        checkIsArrayDataFromModal(data.destSelect),
+        checkIsArrayDataFromModal(data.request_rateSelect),
+        checkIsArrayDataFromModal(data.statusSelect),
+        checkIsArrayDataFromModal(data.authorizationSelect),
+        checkIsArrayDataFromModal(data.customerSelect),
         data.description,
+        data.swagger,
     );
-    setData(dataTable);
-  }
+    fetchData();
+  }, [fetchData]);
 
-  const handleEdit =
+  const handleEdit = React.useCallback(
       (data: any) => {
-      console.log("edit-data = ", data);
-      editOrders(
+        editOrders(
             data.id,
-            checkIsArrayDataFromModal(data.source_systemsSelect),
-            checkIsArrayDataFromModal(data.dest_systemsSelect),
-            checkIsArrayDataFromModal(data.authorizationsSelect),
-            checkIsArrayDataFromModal(data.requests_ratesSelect),
-            checkIsArrayDataFromModal(data.statusesSelect),
-            checkIsArrayDataFromModal(data.customresSelect),
+            checkIsArrayDataFromModal(data.sourceSelect),
+            checkIsArrayDataFromModal(data.destSelect),
+            checkIsArrayDataFromModal(data.request_rateSelect),
+            checkIsArrayDataFromModal(data.statusSelect),
+            checkIsArrayDataFromModal(data.authorizationSelect),
+            checkIsArrayDataFromModal(data.customerSelect),
             data.description,
+            data.swagger,
         );
         fetchData();
         setOpen(false);
-      }
+      },
+      [fetchData]
+  );
 
   const handleDelete = React.useCallback(async () => {
     if (id) {
@@ -180,17 +180,17 @@ const Orders: React.FC = () => {
   return (
       <>
         <Header />
-        <h2 className={styles.orders_title}>Orders</h2>
+        <h2 className={styles.systems_title}>Orders</h2>
         <TableData
             columns={columns}
             openModal={open}
             data={editData || {
-              source_systemsSelect: source,
-              //dist_systemsSelect: destination,
-              authorizationsSelect: auth,
-              requests_ratesSelect: req_rate,
-              statusesSelect: status,
-              customresSelect: customer
+              sourceSelect: sourceSelect,
+              destSelect: destSelect,
+              request_rateSelect: request_rateSelect,
+              statusSelect: statusSelect,
+              authorizationSelect: authorizationSelect,
+              customerSelect: customerSelect,
             }}
             handleEdit={handleEdit}
             handleAdd={handleAdd}
@@ -206,13 +206,15 @@ const Orders: React.FC = () => {
                         handleOpen(row.id);
                         handleSetCurrentData(row);
                       }}>
-                    <TableCell align="left">{row.source_systems}</TableCell>
-                    <TableCell align="left">{row.dist_systems}</TableCell>
-                    <TableCell align="left">{row.customers}</TableCell>
-                    <TableCell align="left">{row.authorizations}</TableCell>
-                    <TableCell align="left">{row.requests_rates}</TableCell>
-                    <TableCell align="left">{row.statuses}</TableCell>
+                    <TableCell align="left">{row.id}</TableCell>
+                    <TableCell align="left">{row.source}</TableCell>
+                    <TableCell align="left">{row.dest}</TableCell>
+                    <TableCell align="left">{row.request_rate}</TableCell>
+                    <TableCell align="left">{row.status}</TableCell>
+                    <TableCell align="left">{row.authorization}</TableCell>
+                    <TableCell align="left">{row.customer}</TableCell>
                     <TableCell align="left">{row.description}</TableCell>
+                    <TableCell align="left">{row.swagger}</TableCell>
                   </TableRow>
               ))}
         </TableData>

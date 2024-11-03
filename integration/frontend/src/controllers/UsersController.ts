@@ -30,8 +30,8 @@ export const deleteUser = async (id: string) => {
     }
 };
 
-export const editUser = async (id: string, fio: string, email: string, post: string, idRole: number, ) => {
-    const data = await putRequest(`/api/users/edit/${id}`, {}, { id, fio, email, post, idRole });
+export const editUser = async (id: string, fio: string, email: string, post: string, contacts: string, idRole: number, ) => {
+    const data = await putRequest(`/api/users/edit/${id}`, {}, { id, fio, email, post, contacts, idRole });
     if (data) {
         return data;
     } else {

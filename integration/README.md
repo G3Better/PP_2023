@@ -1,4 +1,4 @@
-# Game_club
+# Integration
 project for university
 
 To launch a server, you need:

@@ -5,7 +5,9 @@ import Registr from "../Registration/Registr";
 import ProtectedRouters from "./ProtectedRouters";
 import Users from "../Users/Users";
 import Orders from "../Orders/Orders";
-import Systems from "../Systems/Systems";
+import SrcSystems from "../SrcSystems/SrcSystems";
+import DstSystems from "../DstSystems/DstSystems";
+import Ips from "../Ips/Ips";
 import {roles} from "../../utills/roleUtills";
 
 const Routers: React.FC = () => {
@@ -17,7 +19,9 @@ const Routers: React.FC = () => {
         <Route element={<ProtectedRouters />}>
           {roles.client !== localStorage.getItem("role") && <Route path="/users" element={<Users />} />}
           <Route path="/orders" element={<Orders />} />
-          <Route path="/systems" element={<Systems />} />
+          <Route path="/src_systems" element={<SrcSystems/>} />
+          <Route path="/dst_systems" element={<DstSystems/>} />
+          <Route path="/ips" element={<Ips/>} />
         </Route>
       </Routes>
     </Router>
